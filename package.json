@@ -2,7 +2,7 @@
   "name": "api-template",
   "version": "1.0.0",
   "description": "api template",
-  "main": "server.ts",
+  "main": "src/server.ts",
   "repository": "git@github.com:DaThresh/api-template.git",
   "author": "Andrew Thresher <thresh3@me.com>",
   "license": "MIT",
@@ -13,7 +13,7 @@
     "yarn": ">=1.22.10"
   },
   "scripts": {
-    "start": "ts-node server.ts"
+    "start": "ts-node src/server.ts"
   },
   "dependencies": {
     "ts-node": "^10.7.0",
