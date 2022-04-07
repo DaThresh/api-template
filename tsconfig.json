@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "target": "es2020",
+    "module": "commonjs",
+    "strict": true
+  },
+  "compileOnSave": true,
+  "exclude": ["dist", "node_modules"],
+  "references": []
+}

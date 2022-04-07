@@ -1,0 +1,14 @@
+{
+  "name": "api-template",
+  "version": "1.0.0",
+  "description": "api template",
+  "main": "server.ts",
+  "repository": "git@github.com:DaThresh/api-template.git",
+  "author": "Andrew Thresher <thresh3@me.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
+  }
+}
