@@ -33,5 +33,9 @@ class NotFoundError extends ApiError {
   public statusCode = 404;
 }
 
-export { MissingEnvironmentError, SetupError, AuthorizationError, NotFoundError };
+class InternalError extends ApiError {
+  public statusCode = 500;
+}
+
+export { MissingEnvironmentError, SetupError, AuthorizationError, NotFoundError, InternalError };
 export default ApiError;
