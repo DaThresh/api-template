@@ -1,4 +1,4 @@
-import { InitOptions, Model } from 'sequelize';
+import { InitOptions, Model, Sequelize } from 'sequelize';
 
 class ParanoidModel<Data, CreationData> extends Model<
   Data,
@@ -8,7 +8,8 @@ class ParanoidModel<Data, CreationData> extends Model<
   declare readonly updatedAt: Date;
   declare readonly deletedAt: Date | null;
 
-  public static initOptions = (): Partial<InitOptions> => ({
+  public static initOptions = (connection: Sequelize): Partial<InitOptions> => ({
+    sequelize: connection,
     timestamps: true,
     paranoid: true,
   });
