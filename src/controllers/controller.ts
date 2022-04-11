@@ -19,7 +19,7 @@ class Controller {
   >(
     method: method,
     route: string,
-    inputSchema: AnyObjectSchema,
+    inputSchemas: { body?: AnyObjectSchema; query?: AnyObjectSchema; params?: AnyObjectSchema },
     callback: (
       request: Request<RequestUrlVariables, ResponseBody, RequestBody, RequestQuery>,
       response: Response<ResponseBody>,
@@ -37,7 +37,9 @@ class Controller {
           throw new AuthorizationError('Not authorized to use this resource');
         }
         if (request.method === method) {
-          inputSchema.validateSync(request.body);
+          inputSchemas.body?.validateSync(request.body);
+          inputSchemas.query?.validateSync(request.query);
+          inputSchemas.params?.validateSync(request.params);
           await callback(request, response, next);
         } else {
           next();
