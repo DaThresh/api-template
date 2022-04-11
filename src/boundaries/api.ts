@@ -1,6 +1,8 @@
-import express, { Express } from 'express';
+import express, { Express, Request, Response, NextFunction } from 'express';
+import { ValidationError } from 'yup';
 import Controller from '../controllers/controller';
-import { NotFoundError, SetupError } from '../utilities/errors';
+import { ErrorResponse } from '../controllers/interfaces/common';
+import ApiError, { NotFoundError, SetupError } from '../utilities/errors';
 
 abstract class ApiServer {
   protected static app?: Express;
@@ -31,6 +33,34 @@ abstract class ApiServer {
     ApiServer.app.use('/api/(.*)', () => {
       throw new NotFoundError('Route not found');
     });
+  };
+
+  public static registerErrorHandler = () => {
+    if (!ApiServer.app) {
+      throw new SetupError('API not initialized');
+    }
+
+    ApiServer.app.use(
+      (
+        error: Error | ApiError,
+        request: Request,
+        response: Response<ErrorResponse>,
+        // Must have `_: NextFunction` as Express identifies 4 parameter functions as Error handlers
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _: NextFunction
+      ) => {
+        console.error(
+          `Encountered ${error.name} in ${request.method} request to ${request.originalUrl}`
+        );
+        let status = 500;
+        if (error instanceof ApiError) {
+          status = error.statusCode;
+        } else if (error instanceof ValidationError) {
+          status = 400;
+        }
+        response.status(status).send({ name: error.name, message: error.message });
+      }
+    );
   };
 
   public static listen = (port: number, hostname?: string) => {

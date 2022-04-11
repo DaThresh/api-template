@@ -24,4 +24,5 @@ AppDB.connect({
 
 ApiServer.init();
 ApiServer.registerApiCatch();
+ApiServer.registerErrorHandler();
 ApiServer.listen(8000);
