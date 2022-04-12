@@ -22,7 +22,7 @@ abstract class ApiServer {
       throw new SetupError('API not initialized');
     }
 
-    ApiServer.app.use(`/api/${apiRoute}`, controller.router);
+    ApiServer.app.use(`/${apiRoute}`, controller.router);
   };
 
   public static registerApiCatch = () => {
@@ -30,7 +30,7 @@ abstract class ApiServer {
       throw new SetupError('API not initialized');
     }
 
-    ApiServer.app.use('/api/(.*)', () => {
+    ApiServer.app.use('/(.*)', () => {
       throw new NotFoundError('Route not found');
     });
   };
@@ -57,6 +57,8 @@ abstract class ApiServer {
           status = error.statusCode;
         } else if (error instanceof ValidationError) {
           status = 400;
+        } else {
+          console.error(error);
         }
         response.status(status).send({ name: error.name, message: error.message });
       }
