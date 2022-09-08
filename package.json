@@ -8,9 +8,9 @@
   "license": "MIT",
   "private": true,
   "engines": {
-    "node": ">=16.0.0",
+    "node": ">=18.8.0",
     "npm": ">=8.0.0",
-    "yarn": ">=1.22.10"
+    "yarn": ">=1.22.19"
   },
   "scripts": {
     "start": "ts-node src/server.ts",
