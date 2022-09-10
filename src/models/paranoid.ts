@@ -1,6 +1,6 @@
 import { InitOptions, Model, Sequelize } from 'sequelize';
 
-class ParanoidModel<Data, CreationData> extends Model<
+class ParanoidModel<Data extends Record<string, unknown>, CreationData> extends Model<
   Data,
   Omit<CreationData, 'createdAt' | 'updatedAt'>
 > {
