@@ -1,7 +1,5 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
-import ApiServer from './boundaries/api';
+import './boundaries/env';
+import apiServer from './boundaries/api';
 import AppDB from './boundaries/database';
 import { MissingEnvironmentError } from './utilities/errors';
 
@@ -21,12 +19,11 @@ AppDB.connect({
   password: String(process.env.DATABASE_PASSWORD),
   port: Number(process.env.DATABASE_PORT),
 }).then(() => {
-  ApiServer.init();
-  ApiServer.registerApiCatch();
-  ApiServer.registerErrorHandler();
+  apiServer.registerApiCatch();
+  apiServer.registerErrorHandler();
 
   if (!process.env.PORT) {
     throw new MissingEnvironmentError('Port not provided for API');
   }
-  ApiServer.listen(Number(process.env.PORT));
+  apiServer.listen(Number(process.env.PORT));
 });
