@@ -1,6 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { AnyObjectSchema } from 'yup';
-import { AuthorizationError } from '../utilities/errors';
 
 type method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -33,9 +32,6 @@ class Controller {
         response: Response<ResponseBody>,
         next: NextFunction
       ) => {
-        if (request.headers.from !== 'rapidapi') {
-          throw new AuthorizationError('Not authorized to use this resource');
-        }
         if (request.method === method) {
           inputSchemas.body?.validateSync(request.body);
           inputSchemas.query?.validateSync(request.query);
