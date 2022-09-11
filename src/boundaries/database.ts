@@ -1,6 +1,7 @@
 import { Dialect, Options, Sequelize } from 'sequelize';
 import { initModels } from '../models';
 import { SetupError } from '../utilities/errors';
+import logger from './logger';
 
 type AppDBConfigOptions = {
   username: string;
@@ -20,6 +21,7 @@ abstract class AppDB {
       host: options.host,
       port: options.port,
       dialect: 'mysql' || options.dialect,
+      logging: (sql) => logger.verbose(sql),
     };
 
     AppDB.options = options;
@@ -31,7 +33,9 @@ abstract class AppDB {
     );
 
     await AppDB.checkConnection();
+    logger.info(`Verified connection to ${this.name}`);
     await initModels(AppDB.connection);
+    logger.info(`Initialized models for ${this.name}`);
   }
 
   public static async checkConnection() {
