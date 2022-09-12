@@ -36,6 +36,13 @@ abstract class AppDB {
     logger.info(`Verified connection to ${this.name}`);
     await initModels(AppDB.connection);
     logger.info(`Initialized models for ${this.name}`);
+
+    process.on('SIGINT', async () => {
+      logger.info(`Terminating connection with ${this.name} gracefully`);
+      AppDB.connection
+        ?.close()
+        .catch(() => logger.error(`Unable to close connection with ${this.name} gracefully`));
+    });
   }
 
   public static async checkConnection() {
