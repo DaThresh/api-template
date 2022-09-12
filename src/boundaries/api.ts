@@ -6,13 +6,13 @@ import ApiError, { NotFoundError } from '../utilities/errors';
 import logger from './logger';
 
 class ApiServer {
-  protected app: Express;
+  protected express: Express;
 
   constructor() {
     logger.info(`Launching ApiServer using Express`);
-    this.app = express();
-    this.app.use(express.json());
-    this.app.use((request, _, next) => {
+    this.express = express();
+    this.express.use(express.json());
+    this.express.use((request, _, next) => {
       logger.http(`Received ${request.method} request at ${request.path}`);
       next();
     });
@@ -21,17 +21,17 @@ class ApiServer {
 
   public registerController = (apiRoute: string, controller: Controller) => {
     logger.info(`Registered controller with route /api/${apiRoute}`);
-    this.app.use(`/api/${apiRoute}`, controller.router);
+    this.express.use(`/api/${apiRoute}`, controller.router);
   };
 
   public registerApiCatch = () => {
-    this.app.use('/(.*)', () => {
+    this.express.use('/(.*)', () => {
       throw new NotFoundError('Route not found');
     });
   };
 
   public registerErrorHandler = () => {
-    this.app.use(
+    this.express.use(
       (
         error: Error | ApiError | ValidationError,
         request: Request,
@@ -58,7 +58,7 @@ class ApiServer {
   };
 
   public listen = (port: number, hostname?: string) => {
-    const server = this.app.listen(port, hostname ?? '0.0.0.0', () => {
+    const server = this.express.listen(port, hostname ?? '0.0.0.0', () => {
       logger.info(`ApiServer running on port ${port}`);
       logger.info(`Listening for requests...`);
     });
