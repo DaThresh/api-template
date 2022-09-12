@@ -1,9 +1,7 @@
-import { Dialect, Options, Sequelize } from 'sequelize';
-import { initModels } from '../models';
-import { SetupError } from '../utilities/errors';
+import { Dialect, Sequelize } from 'sequelize';
 import logger from './logger';
 
-type AppDBConfigOptions = {
+type DatabaseConfig = {
   username: string;
   password: string;
   name: string;
@@ -12,45 +10,40 @@ type AppDBConfigOptions = {
   dialect?: Dialect;
 };
 
-abstract class AppDB {
-  protected static connection?: Sequelize;
-  protected static options: AppDBConfigOptions;
+class Database {
+  protected connection: Sequelize;
+  protected options: DatabaseConfig;
 
-  public static async connect(options: AppDBConfigOptions) {
-    const sequelizeOptions: Options = {
+  constructor(options: DatabaseConfig) {
+    this.options = options;
+    this.connection = new Sequelize(options.name, options.username, options.password, {
       host: options.host,
       port: options.port,
-      dialect: 'mysql' || options.dialect,
-      logging: (sql) => logger.verbose(sql),
-    };
-
-    AppDB.options = options;
-    AppDB.connection = new Sequelize(
-      options.name,
-      options.username,
-      options.password,
-      sequelizeOptions
-    );
-
-    await AppDB.checkConnection();
-    logger.info(`Verified connection to ${this.name}`);
-    await initModels(AppDB.connection);
-    logger.info(`Initialized models for ${this.name}`);
-
-    process.on('SIGINT', async () => {
-      logger.info(`Terminating connection with ${this.name} gracefully`);
-      AppDB.connection
-        ?.close()
-        .catch(() => logger.error(`Unable to close connection with ${this.name} gracefully`));
+      dialect: options.dialect || 'mysql',
+      logging: (sql, milliseconds) => logger.verbose(`${sql} ${milliseconds}ms`),
+      benchmark: true,
     });
+
+    return this;
   }
 
-  public static async checkConnection() {
-    if (!AppDB.connection) {
-      throw new SetupError('Connection to the database has not been established yet');
-    }
-    return AppDB.connection.authenticate();
+  public async connect(initModels: (sequelize: Sequelize) => void) {
+    const name = this.constructor.name;
+
+    await this.connection.authenticate();
+    logger.info(`Verified connection to ${name}`);
+    await initModels(this.connection);
+    logger.info(`Initialized models for ${name}`);
+
+    process.on('SIGINT', () => {
+      logger.info(`Terminating connection with ${name} gracefully`);
+      this.connection
+        .close()
+        .catch((error) =>
+          logger.error(`Unable to close connection with ${name} gracefully`).error(error)
+        );
+    });
   }
 }
 
-export default AppDB;
+export default Database;
