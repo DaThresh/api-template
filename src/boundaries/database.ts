@@ -40,7 +40,7 @@ class Database {
       this.connection
         .close()
         .catch((error) =>
-          logger.error(`Unable to close connection with ${name} gracefully`).error(error)
+          logger.error(`Unable to close connection with ${name} gracefully`).error(error.stack)
         );
     });
   }

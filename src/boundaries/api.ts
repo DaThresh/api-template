@@ -67,8 +67,7 @@ class ApiServer {
       logger.info('Closing ApiServer gracefully');
       server.close((error) => {
         if (error) {
-          logger.error('Unable to close ApiServer gracefully');
-          throw error;
+          logger.error('Unable to close ApiServer gracefully').error(error.stack);
         }
       });
     });
