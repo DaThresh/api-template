@@ -33,23 +33,24 @@ class ApiServer {
   public registerErrorHandler = () => {
     this.app.use(
       (
-        error: Error | ApiError,
+        error: Error | ApiError | ValidationError,
         request: Request,
         response: Response<ErrorResponse>,
         // Must have `_: NextFunction` as Express identifies 4 parameter functions as Error handlers
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _: NextFunction
       ) => {
-        logger.error(
-          `Encountered ${error.name} in ${request.method} request to ${request.originalUrl}`
-        );
+        const fullPath = request.originalUrl;
+        logger.http(`Encountered ${error.name} in ${request.method} request to ${fullPath}`);
         let status = 500;
         if (error instanceof ApiError) {
           status = error.statusCode;
         } else if (error instanceof ValidationError) {
           status = 400;
         } else {
-          logger.error(error);
+          logger
+            .error(`Unexpected HTTP error during ${request.method} request to ${fullPath}`)
+            .error(error);
         }
         response.status(status).send({ name: error.name, message: error.message });
       }
