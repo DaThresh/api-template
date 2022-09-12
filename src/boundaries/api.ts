@@ -50,7 +50,7 @@ class ApiServer {
         } else {
           logger
             .error(`Unexpected HTTP error during ${request.method} request to ${fullPath}`)
-            .error(error);
+            .error(error.stack);
         }
         response.status(status).send({ name: error.name, message: error.message });
       }
