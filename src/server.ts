@@ -21,6 +21,7 @@ const appDB = new Database({
   port: Number(process.env.DATABASE_PORT),
 });
 appDB.connect(initAppDBModels).then(() => {
+  // Register handlers here
   apiServer.registerApiCatch();
   apiServer.registerErrorHandler();
 
