@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:18.8-slim
+FROM --platform=linux/amd64 node:18.9-slim
 
 WORKDIR /app
 
