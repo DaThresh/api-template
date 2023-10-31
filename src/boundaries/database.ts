@@ -5,6 +5,15 @@ import logger from './logger';
 class Database {
   protected connection: Sequelize;
 
+  public static async initialize(
+    environment: DatabaseEnvironment,
+    initModels: (sequelize: Sequelize) => void
+  ) {
+    const database = new Database(environment);
+    await database.connect(initModels);
+    return database;
+  }
+
   constructor(environment: DatabaseEnvironment) {
     this.connection = new Sequelize({
       host: environment.host,

@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize';
 
-const initAppDBModels = async (sequelize: Sequelize) => {
+const initModels = async (sequelize: Sequelize) => {
   // Initialize models here
 };
 
-export { initAppDBModels };
+export { initModels };
