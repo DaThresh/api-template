@@ -2,18 +2,14 @@ FROM --platform=linux/amd64 node:18.9-slim
 
 WORKDIR /app
 
-COPY package.json yarn.lock tsconfig.json /app/
-
-RUN yarn install
-
+COPY package.json pnpm-lock.yaml tsconfig.json /app/
 COPY src src
 
-RUN yarn build
-RUN rm -rf ./src
+RUN pnpm install
+RUN pnpm build
 
-RUN rm -rf node_modules
-RUN yarn install --production --ignore-scripts --prefer-offline
-RUN yarn cache clean
+RUN rm -rf ./src
+RUN pnpm prune --prod
 
 ENV PORT 8080
 EXPOSE $PORT

@@ -9,8 +9,8 @@
   "private": true,
   "engines": {
     "node": ">=18.9.0",
-    "npm": ">=8.0.0",
-    "yarn": ">=1.22.19"
+    "npm": ">=10.2.0",
+    "pnpm": ">=8.10.0"
   },
   "scripts": {
     "start": "ts-node src/server.ts",
