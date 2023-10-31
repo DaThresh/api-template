@@ -5,6 +5,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml tsconfig.json /app/
 COPY src src
 
+RUN npm install -g pnpm
 RUN pnpm install
 RUN pnpm build
 
