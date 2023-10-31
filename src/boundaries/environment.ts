@@ -8,13 +8,13 @@ export type DatabaseEnvironment = {
   name: string;
   username: string;
   password: string;
-}
+};
 
 export type Environment = {
   appName: string;
   port: number;
   database: DatabaseEnvironment;
-}
+};
 
 export const environment: Environment = {
   appName: 'api-template',
@@ -25,7 +25,7 @@ export const environment: Environment = {
     name: process.env.DATABASE_NAME ?? 'database',
     username: process.env.DATABASE_USERNAME ?? 'root',
     password: process.env.DATABASE_PASSWORD ?? '',
-  }
-}
+  },
+};
 
 logger.info(`Environment configuration loaded`);

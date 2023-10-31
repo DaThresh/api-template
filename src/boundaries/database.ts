@@ -15,7 +15,7 @@ class Database {
       dialect: 'mysql',
       benchmark: true,
       logging: (sql, milliseconds) => logger.verbose(`${sql} ${milliseconds}ms`),
-    })
+    });
 
     return this;
   }

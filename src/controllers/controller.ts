@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import { AnyObjectSchema } from 'yup';
 
 type method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -14,7 +14,7 @@ class Controller {
     RequestBody = never,
     ResponseBody = never,
     RequestQuery = never,
-    RequestUrlVariables = never
+    RequestUrlVariables = never,
   >(
     method: method,
     route: string,
