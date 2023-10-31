@@ -1,17 +1,3 @@
-class MissingEnvironmentError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = this.constructor.name;
-  }
-}
-
-class SetupError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = this.constructor.name;
-  }
-}
-
 // **********************
 // ***** API Errors *****
 // **********************
@@ -37,5 +23,5 @@ class InternalError extends ApiError {
   public statusCode = 500;
 }
 
-export { MissingEnvironmentError, SetupError, AuthorizationError, NotFoundError, InternalError };
+export { AuthorizationError, InternalError, NotFoundError };
 export default ApiError;

@@ -1,28 +1,21 @@
-import { Dialect, Sequelize } from 'sequelize';
+import { Sequelize } from 'sequelize';
+import { DatabaseEnvironment } from './environment';
 import logger from './logger';
-
-type DatabaseConfig = {
-  username: string;
-  password: string;
-  name: string;
-  host: string;
-  port: number;
-  dialect?: Dialect;
-};
 
 class Database {
   protected connection: Sequelize;
-  protected options: DatabaseConfig;
 
-  constructor(options: DatabaseConfig) {
-    this.options = options;
-    this.connection = new Sequelize(options.name, options.username, options.password, {
-      host: options.host,
-      port: options.port,
-      dialect: options.dialect || 'mysql',
-      logging: (sql, milliseconds) => logger.verbose(`${sql} ${milliseconds}ms`),
+  constructor(environment: DatabaseEnvironment) {
+    this.connection = new Sequelize({
+      host: environment.host,
+      port: environment.port,
+      database: environment.name,
+      username: environment.username,
+      password: environment.password,
+      dialect: 'mysql',
       benchmark: true,
-    });
+      logging: (sql, milliseconds) => logger.verbose(`${sql} ${milliseconds}ms`),
+    })
 
     return this;
   }
