@@ -1,12 +1,12 @@
-import express, { Express, Request, Response, NextFunction } from 'express';
+import express, { Express, NextFunction, Request, Response } from 'express';
 import { ValidationError } from 'yup';
 import Controller from '../controllers/controller';
 import { ErrorResponse } from '../controllers/interfaces/common';
 import ApiError, { NotFoundError } from '../utilities/errors';
 import logger from './logger';
 
-class ApiServer {
-  protected express: Express;
+export class Server {
+  private express: Express;
 
   constructor() {
     logger.info(`Launching ApiServer using Express`);
@@ -48,9 +48,10 @@ class ApiServer {
         } else if (error instanceof ValidationError) {
           status = 400;
         } else {
-          logger
-            .error(`Unexpected HTTP error during ${request.method} request to ${fullPath}`)
-            .error(error.stack);
+          logger.error(
+            `Unexpected HTTP error during ${request.method} request to ${fullPath}`,
+            error
+          );
         }
         response.status(status).send({ name: error.name, message: error.message });
       }
@@ -74,5 +75,3 @@ class ApiServer {
     return server;
   };
 }
-
-export default new ApiServer();
