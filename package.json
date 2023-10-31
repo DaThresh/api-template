@@ -14,7 +14,7 @@
   },
   "scripts": {
     "start": "ts-node src/server.ts",
-    "build": "tsc"
+    "build": "rm -rf ./dist && tsc"
   },
   "dependencies": {
     "dotenv": "^16.3.1",
