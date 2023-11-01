@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import { logger } from './logger';
 dotenv.config();
 
 export type DatabaseEnvironment = {
@@ -13,6 +12,7 @@ export type DatabaseEnvironment = {
 export type Environment = {
   appName: string;
   port: number;
+  logLevel: string;
   auth0: { tenantDomain: string };
   database: DatabaseEnvironment;
 };
@@ -20,6 +20,7 @@ export type Environment = {
 export const environment: Environment = {
   appName: 'api-template',
   port: +(process.env.PORT ?? 8080),
+  logLevel: process.env.LOG_LEVEL ?? 'info',
   auth0: {
     tenantDomain: process.env.AUTH0_TENANT_DOMAIN ?? 'project.us.auth0.com',
   },
@@ -31,5 +32,3 @@ export const environment: Environment = {
     password: process.env.DATABASE_PASSWORD ?? '',
   },
 };
-
-logger.info(`Environment configuration loaded`);

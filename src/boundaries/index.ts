@@ -2,6 +2,7 @@ import { Sequelize } from 'sequelize';
 import { Authentication } from './authentication';
 import { Database } from './database';
 import { Environment } from './environment';
+import { logger } from './logger';
 
 export * from './environment';
 export * from './logger';
@@ -17,5 +18,6 @@ export abstract class Boundaries {
   ) {
     this.Database = await Database.initialize(environment.database, initModels);
     this.Authentication = new Authentication(environment);
+    logger.info(`Environment configuration loaded`);
   }
 }
