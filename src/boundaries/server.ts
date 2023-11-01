@@ -67,14 +67,10 @@ export class Server {
 
   public async close() {
     return new Promise<void>((resolve, reject) => {
-      if (this.server) {
-        logger.info(`Closing Server gracefully...`);
-        this.server.close((error) => {
-          error ? reject(error) : resolve();
-        });
-      } else {
-        resolve();
-      }
+      logger.info(`Closing Server gracefully...`);
+      this.server?.close((error) => {
+        error ? reject(error) : resolve();
+      }) ?? resolve();
     });
   }
 }
