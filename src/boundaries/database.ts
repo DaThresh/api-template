@@ -41,6 +41,7 @@ export class Database {
       await this.connection.close();
     } catch (error) {
       logger.error(`Failed to close connection with Database`, error);
+      throw error;
     }
   }
 }
