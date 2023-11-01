@@ -1,4 +1,5 @@
 import express, { Express, NextFunction, Request, Response } from 'express';
+import { Server as HttpServer } from 'http';
 import { ValidationError } from 'yup';
 import { Controller } from '../controllers/controller';
 import { ErrorResponse } from '../controllers/interfaces/common';
@@ -7,9 +8,9 @@ import { logger } from './logger';
 
 export class Server {
   private express: Express;
+  private server?: HttpServer;
 
   constructor() {
-    logger.info(`Launching ApiServer using Express`);
     this.express = express();
     this.express.use(express.json());
     this.express.use((request, _, next) => {
@@ -59,19 +60,21 @@ export class Server {
   };
 
   public listen = (port: number, hostname?: string) => {
-    const server = this.express.listen(port, hostname ?? '0.0.0.0', () => {
-      logger.info(`ApiServer running on port ${port}`);
-      logger.info(`Listening for requests...`);
+    this.server = this.express.listen(port, hostname ?? '0.0.0.0', () => {
+      logger.info(`Listening for requests on port ${port}...`);
     });
-
-    process.on('SIGINT', () => {
-      logger.info('Closing ApiServer gracefully');
-      server.close((error) => {
-        if (error) {
-          logger.error('Unable to close ApiServer gracefully').error(error.stack);
-        }
-      });
-    });
-    return server;
   };
+
+  public async close() {
+    return new Promise<void>((resolve, reject) => {
+      if (this.server) {
+        logger.info(`Closing Server gracefully...`);
+        this.server.close((error) => {
+          error ? reject(error) : resolve();
+        });
+      } else {
+        resolve();
+      }
+    });
+  }
 }

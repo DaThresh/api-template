@@ -30,20 +30,17 @@ export class Database {
   }
 
   public async connect(initModels: (sequelize: Sequelize) => void) {
-    const name = this.constructor.name;
-
+    initModels(this.connection);
     await this.connection.authenticate();
-    logger.info(`Verified connection to ${name}`);
-    await initModels(this.connection);
-    logger.info(`Initialized models for ${name}`);
+    logger.info(`Verified connection to Database`);
+  }
 
-    process.on('SIGINT', () => {
-      logger.info(`Terminating connection with ${name} gracefully`);
-      this.connection
-        .close()
-        .catch((error) =>
-          logger.error(`Unable to close connection with ${name} gracefully`).error(error.stack)
-        );
-    });
+  public async close() {
+    try {
+      logger.info(`Closing Database connection gracefully...`);
+      await this.connection.close();
+    } catch (error) {
+      logger.error(`Failed to close connection with Database`, error);
+    }
   }
 }

@@ -59,45 +59,45 @@ describe('Authentication class', () => {
 
     describe('Error handling', () => {
       test('Will fail with a deformed token', async () => {
-        await expect(instance.authenticate({ authorization: 'Basic ABC' })).rejects.toThrowError(
+        await expect(instance.authenticate({ authorization: 'Basic ABC' })).rejects.toThrow(
           AuthenticationError
         );
       });
 
       test('Will fail with an expired token', async () => {
         const headers = await createHeaders({ expireTime: Date.now() - 1000 });
-        await expect(instance.authenticate(headers)).rejects.toThrowError(JWTExpired);
+        await expect(instance.authenticate(headers)).rejects.toThrow(JWTExpired);
       });
 
       test('Will fail with a Not Before time in the future', async () => {
         const headers = await createHeaders({ notBeforeTime: Date.now() + 60000 });
-        await expect(instance.authenticate(headers)).rejects.toThrowError(JWTClaimValidationFailed);
+        await expect(instance.authenticate(headers)).rejects.toThrow(JWTClaimValidationFailed);
       });
 
       test('Will fail with an algorithm other than RS256', async () => {
         const headers = await createHeaders({ headers: { alg: 'RS512' } });
-        await expect(instance.authenticate(headers)).rejects.toThrowError(JOSEAlgNotAllowed);
+        await expect(instance.authenticate(headers)).rejects.toThrow(JOSEAlgNotAllowed);
       });
 
       test('Will fail with an invalid audience', async () => {
         const headers = await createHeaders({ audience: 'invalid' });
-        await expect(instance.authenticate(headers)).rejects.toThrowError(JWTClaimValidationFailed);
+        await expect(instance.authenticate(headers)).rejects.toThrow(JWTClaimValidationFailed);
       });
 
       test('will fail with an invalid issuer', async () => {
         const headers = await createHeaders({ issuer: 'invalid' });
-        await expect(instance.authenticate(headers)).rejects.toThrowError(JWTClaimValidationFailed);
+        await expect(instance.authenticate(headers)).rejects.toThrow(JWTClaimValidationFailed);
       });
 
       test('Will fail without valid subject claim', async () => {
         const headers = await createHeaders({ subject: '' });
-        await expect(instance.authenticate(headers)).rejects.toThrowError(AuthenticationError);
+        await expect(instance.authenticate(headers)).rejects.toThrow(AuthenticationError);
       });
 
       test('Will fail if Signature does not match Public Key', async () => {
         const { publicKey } = await generateKeyPair('RS256');
         const headers = await createHeaders({ publicKey });
-        await expect(instance.authenticate(headers)).rejects.toThrowError(
+        await expect(instance.authenticate(headers)).rejects.toThrow(
           JWSSignatureVerificationFailed
         );
       });
@@ -110,10 +110,10 @@ describe('Authentication class', () => {
     });
 
     test('Extract Token will fail given a bad token', () => {
-      expect(() => instance['extractToken']('Bearer')).toThrowError(AuthenticationError);
-      expect(() => instance['extractToken']('Basic 123')).toThrowError(AuthenticationError);
-      expect(() => instance['extractToken']('')).toThrowError(AuthenticationError);
-      expect(() => instance['extractToken']()).toThrowError(AuthenticationError);
+      expect(() => instance['extractToken']('Bearer')).toThrow(AuthenticationError);
+      expect(() => instance['extractToken']('Basic 123')).toThrow(AuthenticationError);
+      expect(() => instance['extractToken']('')).toThrow(AuthenticationError);
+      expect(() => instance['extractToken']()).toThrow(AuthenticationError);
     });
   });
 });
