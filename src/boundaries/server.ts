@@ -3,7 +3,7 @@ import { ValidationError } from 'yup';
 import Controller from '../controllers/controller';
 import { ErrorResponse } from '../controllers/interfaces/common';
 import { ApiError, NotFoundError } from '../utilities/errors';
-import logger from './logger';
+import { logger } from './logger';
 
 export class Server {
   private express: Express;

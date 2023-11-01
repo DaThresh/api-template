@@ -1,14 +1,15 @@
 import { IncomingHttpHeaders } from 'http2';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
-import { AuthenticationError } from 'src/utilities/errors';
+import { AuthenticationError } from '../utilities/errors';
 import { Environment } from './environment';
-import logger from './logger';
+import { logger } from './logger';
 
 export class Authentication {
   private tenantDomain: string;
   private appName: string;
 
   constructor(environment: Environment) {
+    logger.verbose(`Initialized Authentication Boundar`);
     this.tenantDomain = environment.auth0.tenantDomain;
     this.appName = environment.appName;
   }

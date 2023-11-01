@@ -1,8 +1,8 @@
 import { Sequelize } from 'sequelize';
 import { DatabaseEnvironment } from './environment';
-import logger from './logger';
+import { logger } from './logger';
 
-class Database {
+export class Database {
   protected connection: Sequelize;
 
   public static async initialize(
@@ -47,5 +47,3 @@ class Database {
     });
   }
 }
-
-export default Database;

@@ -1,12 +1,8 @@
-import Database from './boundaries/database';
-import { environment } from './boundaries/environment';
-import { Server } from './boundaries/server';
+import { Boundaries, Server, environment } from './boundaries';
 import { initModels } from './models';
 
-export let database: Database;
-
 export const createApp = async () => {
-  database = await Database.initialize(environment.database, initModels);
+  await Boundaries.initialize(environment, initModels);
 
   const server = new Server();
   // Register handlers here
