@@ -3,7 +3,7 @@ import { AnyObjectSchema } from 'yup';
 
 type method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
-class Controller {
+export class Controller {
   public readonly router: Router;
 
   constructor() {
@@ -44,5 +44,3 @@ class Controller {
     );
   }
 }
-
-export default Controller;
