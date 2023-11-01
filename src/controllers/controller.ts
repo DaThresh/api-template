@@ -1,45 +1,46 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import { AnyObjectSchema } from 'yup';
-
-type method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+import { EndpointConfiguration } from './utilities';
 
 export class Controller {
   public readonly router: Router;
+  public readonly path: string;
 
-  constructor() {
+  public static defaultInputSchema = {
+    body: undefined,
+    query: undefined,
+    params: undefined,
+  };
+
+  constructor(path: string) {
     this.router = Router();
+    this.path = path;
   }
 
-  public createEndpoint<
-    RequestBody = never,
-    ResponseBody = never,
-    RequestQuery = never,
-    RequestUrlVariables = never,
-  >(
-    method: method,
-    route: string,
-    inputSchemas: { body?: AnyObjectSchema; query?: AnyObjectSchema; params?: AnyObjectSchema },
-    callback: (
-      request: Request<RequestUrlVariables, ResponseBody, RequestBody, RequestQuery>,
-      response: Response<ResponseBody>,
-      next?: NextFunction
-    ) => void
+  public createEndpoint<Context, Body, Query, Params, ResponseData>(
+    config: EndpointConfiguration<Context, Body, Query, Params, ResponseData>
   ) {
     this.router.use(
-      route,
+      `${this.path}${config.route}`,
       async (
-        request: Request<RequestUrlVariables, ResponseBody, RequestBody, RequestQuery>,
-        response: Response<ResponseBody>,
+        request: Request<Params, ResponseData, Body, Query>,
+        response: Response<ResponseData>,
         next: NextFunction
       ) => {
-        if (request.method === method) {
-          inputSchemas.body?.validateSync(request.body);
-          inputSchemas.query?.validateSync(request.query);
-          inputSchemas.params?.validateSync(request.params);
-          await callback(request, response, next);
-        } else {
-          next();
+        const { body, query, params, headers, method } = request;
+        if (method !== config.method) {
+          return next();
         }
+
+        config.inputSchemas.body?.validateSync(body, { strict: true });
+        config.inputSchemas.query?.validateSync(query, { strict: true });
+        config.inputSchemas.params?.validateSync(params, { strict: true });
+
+        const authorizationContext = await config.authorization(headers);
+        const endpointResponse = await config.callback(
+          { body, query, params },
+          authorizationContext
+        );
+        response.status(config.successCode).send(endpointResponse).end();
       }
     );
   }

@@ -10,28 +10,57 @@ export class Server {
   private express: Express;
   private server?: HttpServer;
 
-  constructor() {
+  constructor(...controllers: Controller[]) {
     this.express = express();
     this.express.use(express.json());
-    this.express.use((request, _, next) => {
-      logger.http(`Received ${request.method} request at ${request.path}`);
-      next();
-    });
+
+    this.registerLogger();
+    for (const controller of controllers) {
+      this.registerController(controller);
+    }
+    this.registerCatchAll();
+    this.registerErrorHandler();
+
     return this;
   }
 
-  public registerController = (apiRoute: string, controller: Controller) => {
-    logger.info(`Registered controller with route /api/${apiRoute}`);
-    this.express.use(`/api/${apiRoute}`, controller.router);
-  };
+  public async listen(port: number, hostname?: string) {
+    return new Promise<void>((resolve) => {
+      this.server = this.express.listen(port, hostname ?? '0.0.0.0', () => {
+        logger.info(`Listening for requests on port ${port}...`);
+        resolve();
+      });
+    });
+  }
 
-  public registerApiCatch = () => {
+  public async close() {
+    return new Promise<void>((resolve, reject) => {
+      logger.info(`Closing Server gracefully...`);
+      this.server?.close((error) => {
+        return error ? reject(error) : resolve();
+      }) ?? resolve();
+    });
+  }
+
+  private registerController(controller: Controller) {
+    logger.info(`Registered controller with route /api${controller.path}`);
+    this.express.use(`/api`, controller.router);
+  }
+
+  private registerLogger() {
+    this.express.use((request, _, next) => {
+      logger.http(`Received ${request.method} request at ${request.path}`);
+      return next();
+    });
+  }
+
+  private registerCatchAll() {
     this.express.use('/(.*)', () => {
       throw new NotFoundError('Route not found');
     });
-  };
+  }
 
-  public registerErrorHandler = () => {
+  private registerErrorHandler() {
     this.express.use(
       (
         error: Error | ApiError | ValidationError,
@@ -54,23 +83,8 @@ export class Server {
             error
           );
         }
-        response.status(status).send({ name: error.name, message: error.message });
+        response.status(status).send({ name: error.name, message: error.message }).end();
       }
     );
-  };
-
-  public listen = (port: number, hostname?: string) => {
-    this.server = this.express.listen(port, hostname ?? '0.0.0.0', () => {
-      logger.info(`Listening for requests on port ${port}...`);
-    });
-  };
-
-  public async close() {
-    return new Promise<void>((resolve, reject) => {
-      logger.info(`Closing Server gracefully...`);
-      this.server?.close((error) => {
-        error ? reject(error) : resolve();
-      }) ?? resolve();
-    });
   }
 }
